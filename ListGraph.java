@@ -1,8 +1,5 @@
 import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 //Adjacency list class from https://www.algotree.org/algorithms/adjacency_list/graph_as_adjacency_list_java/
 
@@ -26,5 +23,16 @@ public class ListGraph{
     public List<List<Edge>> getAdjList(){ 
         return adjList; 
     }
- 
+    
+    public int calculateInitialPrize(int nodeId){
+        List<Edge> edgesOfSourceNode = adjList.get(nodeId-1);
+        Node sourceNode = Node.getNodeById(nodeId);
+        int initialPrize = sourceNode.getPackets(); 
+        for(int i = 0; i < edgesOfSourceNode.size(); i++){
+            Node connectedNode = Node.getNodeById(edgesOfSourceNode.get(i).getDestination());
+            initialPrize += connectedNode.getPackets();
+            sourceNode.addToNetwork(connectedNode);
+        }
+        return initialPrize; 
+    }
 } 

@@ -1,12 +1,16 @@
 import java.util.Scanner; 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class SensorNetworkRunner {
     
     public static void main(String[] args){ 
         Scanner scan = new Scanner(System.in);
-        int numNodes, width, length, transmissionRange,  graphChoice, algoChoice, minPackets, maxPackets; 
+        int numNodes, width, length, transmissionRange, minPackets, maxPackets; 
+        double battery, energyCoefficient;
 
         //Getting user input 
         System.out.println("Please enter width of sensor network:");
@@ -17,15 +21,14 @@ public class SensorNetworkRunner {
         numNodes = scan.nextInt();
         System.out.println("Please enter transmission range:");
         transmissionRange = scan.nextInt();
-        System.out.println("Type 1 for adjacency matrix or 2 for adjacency list:");
-        graphChoice = scan.nextInt();
-        System.out.println("Type 1 for breadth first search or 2 for depth first search. You can also Type 3 for both:");
-        algoChoice = scan.nextInt();
         System.out.println("Please enter maximum number of data packets per node:");
         maxPackets = scan.nextInt();
         System.out.println("Please enter minimum number of data packets per node:");
         minPackets= scan.nextInt();
-
+        System.out.println("Please enter the amount of battery attributed to robot in watts");
+        battery = scan.nextDouble();
+        System.out.println("Please enter the energy coefficient of the robot");
+        energyCoefficient = scan.nextDouble();
         scan.close(); 
 
         ListGraph graph = new ListGraph(numNodes);
@@ -35,7 +38,7 @@ public class SensorNetworkRunner {
         for(int i = 1; i <= numNodes; i++){ 
             Node newNode = new Node(i, width, length, minPackets, maxPackets);
             nodeList.add(newNode);
-            NodeRegistry.registerNode(newNode);
+
         }
 
         //If a pair of nodes are in distance of each other, add them to the graph
@@ -47,13 +50,19 @@ public class SensorNetworkRunner {
             }
         }
 
-
-        for(List<Edge> edgeList : graph.getAdjList()){
-            for(int i = 0; i < edgeList.size(); i++){ 
-                System.out.printf("Edge %d to %d "));
-            }
+        for(int i = 1; i <= numNodes; i++){
+            int prize = graph.calculateInitialPrize(i);
+            Node node = Node.getNodeById(i); 
+            node.setPrize(prize);
         }
 
+        Robot robot = new Robot(battery, energyCoefficient, nodeList);
+        while(robot.getBattery() > 0){
+            robot.setFeasibleNodes();
+            robot.findBestPCR();
+            robot.moveRobotToNode(robot.getGreatestNode());
+        }
 
      }
+     
 }

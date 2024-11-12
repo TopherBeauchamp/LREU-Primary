@@ -21,4 +21,8 @@ public class Edge {
     public int getSource(){ 
         return source; 
     }
+
+    public String toString(){
+        return String.format("Edge: %d source & %d dest", this.getSource(), this.getDestination());
+    }
 }
