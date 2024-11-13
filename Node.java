@@ -42,6 +42,9 @@ public class Node {
         this.prize = prize;
     }
 
+    public List<Node> getNetwork(){
+        return network; 
+    }
     public int getPrize(){
         return prize; 
     }
@@ -80,7 +83,7 @@ public class Node {
 
     @Override
     public String toString() {
-        return String.format("Node #%d (%d,%d) %d prize & %f PCR", this.getId(), this.getX(), this.getY(), this.getPrize(), this.getPCR());
+        return String.format("Node #%d (%d,%d) %d packets, %d prize, & %f PCR", this.getId(), this.getX(), this.getY(), this.numPackets, this.getPrize(), this.getPCR());
     }
 
     public static void registerNode(Node node){

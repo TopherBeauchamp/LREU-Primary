@@ -24,15 +24,34 @@ public class ListGraph{
         return adjList; 
     }
     
-    public int calculateInitialPrize(int nodeId){
+    public int calculatePrize(int nodeId, boolean initial){
         List<Edge> edgesOfSourceNode = adjList.get(nodeId-1);
         Node sourceNode = Node.getNodeById(nodeId);
         int initialPrize = sourceNode.getPackets(); 
         for(int i = 0; i < edgesOfSourceNode.size(); i++){
             Node connectedNode = Node.getNodeById(edgesOfSourceNode.get(i).getDestination());
             initialPrize += connectedNode.getPackets();
-            sourceNode.addToNetwork(connectedNode);
+            if(initial){
+                sourceNode.addToNetwork(connectedNode);
+            }
         }
         return initialPrize; 
+    }
+
+    public void updatePrizes(List<Node> network){
+        for(Node node : network){
+            node.setPrize(this.calculatePrize(node.getId(), false));
+        }
+        int nodeID = 0; 
+        for(List<Edge> edgeList : this.getAdjList()){
+            nodeID++; 
+            for(Edge edge : edgeList){
+                Node node = Node.getNodeById(nodeID);
+                Node neighbor = Node.getNodeById(edge.getDestination());
+                if(network.contains(neighbor)){
+                    node.setPrize(this.calculatePrize(nodeID, false));
+                }
+            }
+        }
     }
 } 

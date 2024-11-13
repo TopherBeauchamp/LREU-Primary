@@ -41,6 +41,7 @@ public class SensorNetworkRunner {
 
         }
 
+
         //If a pair of nodes are in distance of each other, add them to the graph
         for (int i = 0; i < numNodes; i++) {
             for (int j = i + 1; j < numNodes; j++) {
@@ -51,17 +52,40 @@ public class SensorNetworkRunner {
         }
 
         for(int i = 1; i <= numNodes; i++){
-            int prize = graph.calculateInitialPrize(i);
+            int prize = graph.calculatePrize(i, true);
             Node node = Node.getNodeById(i); 
             node.setPrize(prize);
         }
 
         Robot robot = new Robot(battery, energyCoefficient, nodeList);
-        while(robot.getBattery() > 0){
-            robot.setFeasibleNodes();
+        robot.setFeasibleNodes();
+        List<Node> feasibleNodes = robot.getFeasibleNodes();
+        List<Node> unvisitedNodes = robot.getUnvisitedNodes();
+        int iter = 1; 
+
+        while(feasibleNodes.size() != 0 && unvisitedNodes.size() != 0){
             robot.findBestPCR();
+            System.out.println("\nIteration " + iter + "\n");
+            System.out.println(robot);
+            System.out.println("\nFeasible Nodes:");
+            for(Node node : feasibleNodes){
+                System.out.println(node);
+            }
+            iter++; 
             robot.moveRobotToNode(robot.getGreatestNode());
+            graph.updatePrizes(robot.getGreatestNode().getNetwork());
+            robot.setFeasibleNodes();
+            feasibleNodes = robot.getFeasibleNodes();
+            unvisitedNodes = robot.getUnvisitedNodes();
         }
+        
+        System.out.println(robot);
+        System.out.println("\nFeasible Nodes:");
+            for(Node node : feasibleNodes){
+                System.out.println(node);
+            }
+
+        robot.returnHome();
 
      }
      

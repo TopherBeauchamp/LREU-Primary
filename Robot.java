@@ -33,6 +33,7 @@ public class Robot {
         totalPackets += node.getPrize(); 
         unvisitedNodes.remove(node);
         route.add("Node " + node.getId());
+        node.drainNetwork();
     }
 
     public double getBattery(){
@@ -40,15 +41,33 @@ public class Robot {
     }
 
     public void setFeasibleNodes(){
+        feasibleNodes.clear(); 
+        greatestPCRNode = null;
         double energyToDepot; 
         double energyToNode; 
         for(Node node : unvisitedNodes){
             energyToDepot = Math.sqrt(node.getX()*node.getX() + node.getY() * node.getY()) * energyCoefficient;
             energyToNode = this.distancefromRobot(node) * energyCoefficient;
-            if(battery > energyToDepot + energyToNode){
+            if(battery > energyToDepot + energyToNode && node.getPrize() != 0){
                 feasibleNodes.add(node);
             }
         }
+    }
+
+    public void returnHome(){ 
+        battery -= Math.sqrt(this.x * this.x + this.y * this.y) * energyCoefficient;
+        this.x = 0; 
+        this.y = 0; 
+        route.add("Initial Depot");
+        System.out.println(this);
+    }
+
+    public List<Node> getFeasibleNodes(){
+        return feasibleNodes;
+    }
+    
+    public List<String> getRoute(){
+        return route; 
     }
 
     public void findBestPCR(){
@@ -65,5 +84,21 @@ public class Robot {
 
     public Node getGreatestNode(){
         return greatestPCRNode;
+    }
+
+    public List<Node> getUnvisitedNodes(){
+        return unvisitedNodes;
+    }
+
+    public int getX(){ 
+        return x;
+    }
+
+    public int getY(){ 
+        return y; 
+    }
+
+    public String toString(){ 
+        return String.format("Robot Position: (%d, %d) \nLeftover battery: %f  Total Packets: %d Route: %s", this.x, this.y, this.battery, this.totalPackets, this.route);
     }
 }
