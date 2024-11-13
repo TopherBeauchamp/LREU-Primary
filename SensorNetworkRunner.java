@@ -1,8 +1,7 @@
 import java.util.Scanner; 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 public class SensorNetworkRunner {
@@ -31,6 +30,7 @@ public class SensorNetworkRunner {
         energyCoefficient = scan.nextDouble();
         scan.close(); 
 
+        
         ListGraph graph = new ListGraph(numNodes);
 
         //Initializing nodes 
@@ -60,10 +60,9 @@ public class SensorNetworkRunner {
         Robot robot = new Robot(battery, energyCoefficient, nodeList);
         robot.setFeasibleNodes();
         List<Node> feasibleNodes = robot.getFeasibleNodes();
-        List<Node> unvisitedNodes = robot.getUnvisitedNodes();
         int iter = 1; 
 
-        while(feasibleNodes.size() != 0 && unvisitedNodes.size() != 0){
+        while(feasibleNodes.size() != 0){
             robot.findBestPCR();
             System.out.println("\nIteration " + iter + "\n");
             System.out.println(robot);
@@ -76,7 +75,6 @@ public class SensorNetworkRunner {
             graph.updatePrizes(robot.getGreatestNode().getNetwork());
             robot.setFeasibleNodes();
             feasibleNodes = robot.getFeasibleNodes();
-            unvisitedNodes = robot.getUnvisitedNodes();
         }
         
         System.out.println(robot);

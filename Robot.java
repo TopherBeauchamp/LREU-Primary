@@ -25,7 +25,6 @@ public class Robot {
         return Math.sqrt(dx*dx + dy*dy); 
     }
 
-
     public void moveRobotToNode(Node node){
         battery -= this.distancefromRobot(node) * energyCoefficient; 
         x = node.getX();
@@ -34,10 +33,6 @@ public class Robot {
         unvisitedNodes.remove(node);
         route.add("Node " + node.getId());
         node.drainNetwork();
-    }
-
-    public double getBattery(){
-        return battery;
     }
 
     public void setFeasibleNodes(){
@@ -88,14 +83,6 @@ public class Robot {
 
     public List<Node> getUnvisitedNodes(){
         return unvisitedNodes;
-    }
-
-    public int getX(){ 
-        return x;
-    }
-
-    public int getY(){ 
-        return y; 
     }
 
     public String toString(){ 
