@@ -25,6 +25,14 @@ public class Node {
         this.numPackets = rand.nextInt(maxPackets - minPackets +1) + minPackets; 
         registerNode(this);
     }
+
+    public Node(int id, int x, int y, int packets){
+        this.id = id; 
+        this.x = x; 
+        this.y = y; 
+        this.numPackets = packets; 
+        registerNode(this);
+    }
     
     public void addToNetwork(Node neighbor){
         this.network.add(neighbor);
