@@ -16,7 +16,16 @@ If you wish to use this code you can clone it by entering the following command 
 ```
 git clone https://github.com/TopherBeauchamp/LREU-Final
 ```
-
+Below compiling, please change the path given in the sensorNetworkRunner.java file @ line 39 to the path where your network files are stored.
+This is where the change must be implemented: 
+```
+  /* *********************** IMPORTANT **************************
+   * The path below must be altered in order for this to work properly 
+   * in your enviornment. I'm currently working on incorperating a .env 
+   * file to make this process easier 
+   */
+   String fullFilePath = "C:\\Users\\tophe\\OneDrive\\Desktop\\LREU-Final\\Networks\\" + filename;
+```
 The code can be compiled in a terminal with the following commands:
 
 ### Compile Java Files: 
