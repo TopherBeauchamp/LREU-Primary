@@ -9,6 +9,7 @@ public class InputNetwork {
     private ListGraph graph;
     private int transmissionRange;
 
+    // This constructor takes in a transmission range & a network file and runs the file through a fileReader 
     public InputNetwork(String filename, int transmissionRange) throws FileNotFoundException {
         this.transmissionRange = transmissionRange;
         this.nodeList = new ArrayList<>();
@@ -16,6 +17,7 @@ public class InputNetwork {
         createGraph();
     }
 
+    // This is where the file gets read; splitting each line into four parts, nodeID, x, y, and packets 
     private void readNetworkFromFile(String filename) throws FileNotFoundException {
         Scanner fileScanner = new Scanner(new File(filename));
         
@@ -54,6 +56,7 @@ public class InputNetwork {
         }
     }
 
+    // Getter Methods 
     public ListGraph getGraph() {
         return graph;
     }

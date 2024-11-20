@@ -1,15 +1,18 @@
 import java.util.List;
 import java.util.ArrayList;
 
-//Adjacency list class from https://www.algotree.org/algorithms/adjacency_list/graph_as_adjacency_list_java/
 
 public class ListGraph{
-
-    private int numVertices;
+    /*
+     * This adjacency list graph representation stores a list of edges 
+     * for each node created. The edge represents a connection between
+     * one node and another. Since List variables start at 0 and our nodeId's 
+     * start at 1, a lot of instantiation in the adjacency list is done by subtracting 
+     * a node's ID value by 1, & getting values from adj list is done by vice versa 
+    */
     private List<List<Edge>> adjList;
 
     ListGraph(int numVertices) {
-        this.numVertices = numVertices;
         adjList = new ArrayList<>(numVertices);
         for (int i=0; i<numVertices; i++)
             adjList.add(new ArrayList<>());
@@ -24,6 +27,15 @@ public class ListGraph{
         return adjList; 
     }
     
+
+    /*
+     * This calculatePrize method iterates through a given nodes's edges 
+     * that are associated with it through the adj list variable. There's 
+     * also a boolean parameter, that prevents nodes from repeatedly being 
+     * added to the List<Node> network variable. This is useful because 
+     * initially we do want this method to create a network from the nodes 
+     * connected to the given node 
+     */
     public int calculatePrize(int nodeId, boolean initial){
         List<Edge> edgesOfSourceNode = adjList.get(nodeId-1);
         Node sourceNode = Node.getNodeById(nodeId);
@@ -38,6 +50,10 @@ public class ListGraph{
         return initialPrize; 
     }
 
+
+    /* 
+     * This method 
+     */
     public void updatePrizes(List<Node> network){
         for(Node node : network){
             node.setPrize(this.calculatePrize(node.getId(), false));

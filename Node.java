@@ -15,9 +15,9 @@ public class Node {
     private static Random rand = new Random();  
     private int prize; 
     private List<Node> network = new ArrayList<>(); 
-    private double PCR = 0.0; 
+    private double PCR = 0.0; // Prize/Cost Ratio 
     
-    // Constructor that creates a node with random position
+    // Constructor used by automatedSetup, where nodes are randomly placed and assigned packets
     public Node(int id, int maxWidth, int maxLength, int minPackets, int maxPackets) {
         this.id = id;
         this.x = rand.nextInt(maxWidth + 1);  // random number from 0 to maxWidth-1
@@ -26,6 +26,7 @@ public class Node {
         registerNode(this);
     }
 
+    // Constructor used by inputNetwork, where placement and packets are predefined 
     public Node(int id, int x, int y, int packets){
         this.id = id; 
         this.x = x; 
@@ -34,10 +35,7 @@ public class Node {
         registerNode(this);
     }
     
-    public void addToNetwork(Node neighbor){
-        this.network.add(neighbor);
-    }
-
+    //This method takes the network of a node (visited by robot) and drains the network of packets 
     public void drainNetwork(){
         this.drainPackets();
         for(Node node : this.network){
@@ -46,19 +44,9 @@ public class Node {
         this.prize = 0;
     }
 
-    public void setPrize(int prize){
-        this.prize = prize;
-    }
-
+    // Getter methods 
     public List<Node> getNetwork(){
         return network; 
-    }
-    public int getPrize(){
-        return prize; 
-    }
-
-    public void setPCR(double PCR){ 
-        this.PCR = PCR; 
     }
 
     public double getPCR(){
@@ -80,27 +68,46 @@ public class Node {
     public int getPackets(){ 
         return numPackets;
     }
+    
 
-    public void drainPackets() {
-        numPackets = 0; 
-    }
-
-    public static Node getNodeById(int id){ 
-        return nodeRegistry.get(id);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Node #%d (%d,%d) %d packets, %d prize, & %f PCR", this.getId(), this.getX(), this.getY(), this.numPackets, this.getPrize(), this.getPCR());
-    }
-
-    public static void registerNode(Node node){
-        nodeRegistry.put(node.getId(), node);
+    public int getPrize(){
+        return prize; 
     }
 
     public double getDistance(Node other) {
         int dx = this.x - other.x;
         int dy = this.y - other.y;
         return Math.sqrt(dx*dx + dy*dy);  
+    }
+
+    public static Node getNodeById(int id){ 
+        return nodeRegistry.get(id);
+    }
+
+    // Setter Methods 
+    public void setPCR(double PCR){ 
+        this.PCR = PCR; 
+    }
+
+    public void setPrize(int prize){
+        this.prize = prize;
+    }
+
+    public void drainPackets() {
+        numPackets = 0; 
+    }
+
+    public static void registerNode(Node node){
+        nodeRegistry.put(node.getId(), node);
+    }
+
+    public void addToNetwork(Node neighbor){
+        this.network.add(neighbor);
+    }
+
+    // Cleaning up output for node variables 
+    @Override
+    public String toString() {
+        return String.format("Node #%d (%d,%d) %d packets, %d prize, & %f PCR", this.getId(), this.getX(), this.getY(), this.numPackets, this.getPrize(), this.getPCR());
     }
 }

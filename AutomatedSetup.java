@@ -17,6 +17,7 @@ public class AutomatedSetup {
 
 
     public void setVariables(){ 
+        // Getting user input 
         Scanner scan = new Scanner(System.in);
         System.out.println("Please enter width of sensor network:");
         width = scan.nextInt();
