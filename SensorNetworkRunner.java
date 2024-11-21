@@ -71,7 +71,7 @@ public class SensorNetworkRunner {
          * Prizes for nodes associated with the greatest PCR node are updated 
          * the feasible nodes variable is updated and the next iteration occurs 
          */ 
-        System.out.println("Algorithm begins at: " + System.currentTimeMillis());
+        long initialTime = System.currentTimeMillis();
         while(feasibleNodes.size() != 0){
             robot.findBestPCR();
             System.out.println("\nIteration " + iter + "\n");
@@ -81,19 +81,24 @@ public class SensorNetworkRunner {
                 System.out.println(node);
             }
             iter++; 
+            System.out.println("\nRobot goes to " + robot.getGreatestNode());
             robot.moveRobotToNode(robot.getGreatestNode());
             graph.updatePrizes(robot.getGreatestNode().getNetwork());
             robot.setFeasibleNodes();
             feasibleNodes = robot.getFeasibleNodes();
         }
-        
+         
+        // Printing at end of algorithm to show no more feasible nodes
+        System.out.println("End of Algorithm, total of " + iter + "iterations ");
         System.out.println(robot);
         System.out.println("\nFeasible Nodes:");
         for(Node node : feasibleNodes){
             System.out.println(node);
         }
-
         robot.returnHome();
-        System.out.println("Algorithm ends at: " + System.currentTimeMillis());
+
+        // Getting & printing algorithm time 
+        long end = System.currentTimeMillis() - initialTime; 
+        System.out.println("Algorithm took " + end + " milliseconds");
      }
 }
