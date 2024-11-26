@@ -1,4 +1,4 @@
-# Final LREU Project
+# Primary LREU Project
 In this project, I represent a robot traversing through a network of data sensor nodes using an adjacency list, and by implementing a custom greedy algorithm, the robot is able to maximize 
 profit (data packets from nodes) and minimize cost (distance travelled/energy depleted).  
 
