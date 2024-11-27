@@ -75,4 +75,12 @@ public class AutomatedSetup {
     public List<Node> getNodeList(){
         return nodeList; 
     }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getLength(){ 
+        return length; 
+    }
 }

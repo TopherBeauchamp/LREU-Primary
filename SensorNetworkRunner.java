@@ -89,7 +89,7 @@ public class SensorNetworkRunner {
         }
          
         // Printing at end of algorithm to show no more feasible nodes
-        System.out.println("End of Algorithm, total of " + iter + "iterations ");
+        System.out.println("End of Algorithm, total of " + iter + " iterations ");
         System.out.println(robot);
         System.out.println("\nFeasible Nodes:");
         for(Node node : feasibleNodes){
@@ -100,5 +100,14 @@ public class SensorNetworkRunner {
         // Getting & printing algorithm time 
         long end = System.currentTimeMillis() - initialTime; 
         System.out.println("Algorithm took " + end + " milliseconds");
+
+        if(inputtingNetwork == 0){
+            Visualization visual = new Visualization(autoSetup.getNodeList(), autoSetup.getWidth(), autoSetup.getLength());
+            visual.run(); 
+        }
+        if(inputtingNetwork == 1){
+            Visualization visual = new Visualization(nodeList, 1000, 1000);
+            visual.run();
+        }
      }
 }
