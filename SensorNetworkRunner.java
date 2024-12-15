@@ -33,8 +33,7 @@ public class SensorNetworkRunner {
 
             /* *********************** IMPORTANT **************************
              * The path below must be altered in order for this to work properly 
-             * in your enviornment. I'm currently working on incorperating a .env 
-             * file to make this process easier 
+             * in your environment
              */
             String fullFilePath = "C:\\Users\\tophe\\OneDrive\\Desktop\\LREU-Final\\Networks\\" + filename;
             try {
@@ -44,13 +43,12 @@ public class SensorNetworkRunner {
                 for(Node node : nodeList){
                     System.out.println(node);
                 }
+                int count = nodeList.size()+1;
+                System.out.println("There are " + count + " nodes in the network including initial deposit");   
                 // Battery and energy coefficient need to be inputted 
                 System.out.println("Enter the amount of battery attributed to robot in watts:");
                 double battery = scan.nextDouble();
-                System.out.println("Enter the energy coefficient of the robot:");
-                double energyCoefficient = scan.nextDouble();
-                
-                robot = new Robot(battery, energyCoefficient, nodeList);
+                robot = new Robot(battery, nodeList);
                 robot.setFeasibleNodes();
             } catch (FileNotFoundException e) {
                 System.out.println("File not found. Exiting.");
@@ -78,7 +76,7 @@ public class SensorNetworkRunner {
             System.out.println(robot);
             System.out.println("\nFeasible Nodes:");
             for(Node node : feasibleNodes){
-                System.out.println(node);
+                System.out.println(node); 
             }
             iter++; 
             System.out.println("\nRobot goes to " + robot.getGreatestNode());
@@ -93,6 +91,9 @@ public class SensorNetworkRunner {
         System.out.println(robot);
         System.out.println("\nFeasible Nodes:");
         for(Node node : feasibleNodes){
+            if(feasibleNodes.size() == 0){
+                System.out.println("No more feasible nodes");
+            }
             System.out.println(node);
         }
         robot.returnHome();

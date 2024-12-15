@@ -17,6 +17,12 @@ public class Node {
     private List<Node> network = new ArrayList<>(); 
     private double PCR = 0.0; // Prize/Cost Ratio 
     
+    // Constructor for initial depot 
+    public Node(){
+        this.id  = 0; 
+        this.x = 0; 
+        this.y = 0; 
+    }
     // Constructor used by automatedSetup, where nodes are randomly placed and assigned packets
     public Node(int id, int maxWidth, int maxLength, int minPackets, int maxPackets) {
         this.id = id;

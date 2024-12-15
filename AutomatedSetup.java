@@ -10,7 +10,6 @@ public class AutomatedSetup {
     private int minPackets = 0;
     private int maxPackets = 0;
     private double battery = 0.0;
-    private double energyCoefficient = 0.0;
     List<Node> nodeList; 
 
     public AutomatedSetup() {}
@@ -33,8 +32,6 @@ public class AutomatedSetup {
         minPackets = scan.nextInt();
         System.out.println("Please enter the amount of battery attributed to robot in watts");
         battery = scan.nextDouble();
-        System.out.println("Please enter the energy coefficient of the robot");
-        energyCoefficient = scan.nextDouble();
         scan.close();
     }
 
@@ -68,7 +65,7 @@ public class AutomatedSetup {
 
 
     public Robot createRobot(){
-        Robot robot = new Robot(battery, energyCoefficient, nodeList);
+        Robot robot = new Robot(battery, nodeList);
         robot.setFeasibleNodes();
         return robot; 
     }
