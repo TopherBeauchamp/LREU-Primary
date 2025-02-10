@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
-import java.util.Scanner; 
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SensorNetworkRunner {
@@ -16,11 +18,12 @@ public class SensorNetworkRunner {
         ListGraph graph = null; 
         Robot robot = null; 
         List<Node> nodeList = null;
+        List<Node> immutableNodeList = null; 
+        List<Node> modify = null; 
 
-        
         if(inputtingNetwork == 0){
             // Generating network logic 
-            autoSetup.setVariables();
+            autoSetup.setVariables(); 
             graph = autoSetup.createNetwork();
             robot = autoSetup.createRobot();
         } else if (inputtingNetwork == 1) {
@@ -40,6 +43,10 @@ public class SensorNetworkRunner {
                 InputNetwork inputNetwork = new InputNetwork(fullFilePath, transmissionRange);
                 graph = inputNetwork.getGraph();
                 nodeList = inputNetwork.getNodeList();
+                modify = new ArrayList<>(nodeList);
+                modify.add(new Node(0, 0, 0, 0));
+
+                immutableNodeList = Collections.unmodifiableList(new ArrayList<>(modify));
                 for(Node node : nodeList){
                     System.out.println(node);
                 }
@@ -102,12 +109,14 @@ public class SensorNetworkRunner {
         long end = System.currentTimeMillis() - initialTime; 
         System.out.println("Algorithm took " + end + " milliseconds");
 
+
+
         if(inputtingNetwork == 0){
             Visualization visual = new Visualization(autoSetup.getNodeList(), autoSetup.getWidth(), autoSetup.getLength());
             visual.run(); 
         }
         if(inputtingNetwork == 1){
-            Visualization visual = new Visualization(nodeList, 1000, 1000);
+            Visualization visual = new Visualization( immutableNodeList, 1700, 1700);
             visual.run();
         }
      }
