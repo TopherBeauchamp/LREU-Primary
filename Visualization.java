@@ -28,18 +28,30 @@ import javax.swing.JPanel; // Container for holding and managing components
 // These deal with panning and zooming 
 import java.awt.event.MouseWheelEvent; 
 import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseAdapter;
 
 public class Visualization extends JPanel implements Runnable {
     private List<Node> nodes;
     private double graphWidth;
     private double graphHeight;
     private int ovalSize = 6;
-    private double zoomFactor = 1.0;
+    private double zoomFactor = .8;
+    private List<Node> route; 
+    private int transmission;
+    private static final int PADDING = 50; 
 
-    public Visualization(List<Node> nodes, double width, double height) {
+
+    private int xOffset = 0, yOffset = 0;
+    private int lastMouseX, lastMouseY;
+
+    public Visualization(List<Node> nodes, double width, double height, List<Node> route, int transmission) {
         this.nodes = nodes;
         graphWidth = width;
         graphHeight = height;
+        this.route = route; 
+        this.transmission = transmission;
 
         addMouseWheelListener(new MouseWheelListener() {
             @Override
@@ -52,89 +64,107 @@ public class Visualization extends JPanel implements Runnable {
                 repaint();
             }
         });
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int dx = e.getX() - lastMouseX;
+                int dy = e.getY() - lastMouseY;
+                xOffset += dx;
+                yOffset += dy;
+                lastMouseX = e.getX();
+                lastMouseY = e.getY();
+                repaint();
+            }
+        });
+
         invalidate();
         repaint();
     }
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        super.paintComponent(g);
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Normalize node coordinates
-        double xMin = nodes.stream().mapToDouble(Node::getX).min().orElse(0);
-        double xMax = nodes.stream().mapToDouble(Node::getX).max().orElse(1);
-        double yMin = nodes.stream().mapToDouble(Node::getY).min().orElse(0);
-        double yMax = nodes.stream().mapToDouble(Node::getY).max().orElse(1);
-
-        double padding = 50;
-        double newXMin = padding;
-        double newXMax = getWidth() - padding;
-        double newYMin = padding;
-        double newYMax = getHeight() - padding;
-
-        // Create graph points
-        List<Point> graphPoints = new ArrayList<>();
-        for (Node node : nodes) {
-            double normX = (node.getX() - xMin) / (xMax - xMin);
-            double normY = (node.getY() - yMin) / (yMax - yMin);
-            
-            double x1 = newXMin + normX * (newXMax - newXMin) * zoomFactor;
-            double y1 = newYMax - normY * (newYMax - newYMin) * zoomFactor;
-            
-            graphPoints.add(new Point((int) x1, (int) y1));
-        }
-
+    // Ensure the entire background is white
+    g2.setColor(Color.white);
+    g2.fillRect(0, 0, getWidth(), getHeight());
+    
+        // Apply zoom and translation
+        g2.translate(getWidth() / 2 + xOffset, getHeight() / 2 + yOffset); 
+        g2.scale(zoomFactor, zoomFactor);  
+        g2.translate(-getWidth() / 2, -getHeight() / 2);
+    
         // Background
         g2.setColor(Color.white);
         g2.fillRect(0, 0, getWidth(), getHeight());
-
+    
         // Draw nodes
         g2.setColor(Color.black);
-        for (Point p : graphPoints) {
-            Ellipse2D.Double shape = new Ellipse2D.Double(p.x - ovalSize, p.y - ovalSize, ovalSize * 2, ovalSize * 2);
+        for (Node node : nodes) {
+            int x = (int) (node.getX() * zoomFactor);
+            int y = (int) ((getHeight() - node.getY()) * zoomFactor);  // Flip Y-axis with zoom
+            Ellipse2D.Double shape = new Ellipse2D.Double(x - ovalSize, y - ovalSize, ovalSize * 2, ovalSize * 2);
             g2.fill(shape);
         }
-
+    
+        // Draw transmission ranges
+        g2.setColor(new Color(0, 0, 255, 50)); // Transparent blue
+        for (Node node : nodes) {
+            if (node.getId() == 0) continue;
+            int x = (int) (node.getX() * zoomFactor);
+            int y = (int) ((getHeight() - node.getY()) * zoomFactor);
+            int radius = (int) (transmission * zoomFactor);
+            g2.drawOval(x - radius, y - radius, 2 * radius, 2 * radius);
+        }
+    
         // Draw node IDs and packet counts
         g2.setColor(Color.red);
         FontMetrics metrics = g2.getFontMetrics();
         Font originalFont = g2.getFont();
-        Font largerFont = originalFont.deriveFont(originalFont.getSize() + 20f);
+        Font largerFont = originalFont.deriveFont(originalFont.getSize() + 15f);
         g2.setFont(largerFont);
-
-        int textHeight = metrics.getHeight();  // Get height of the text
-        int textPadding = 5;  // Adjust spacing between text and node
-        for (int i = 0; i < nodes.size(); i++) {
-            Node currentNode = nodes.get(i);
-            Point currentPoint = graphPoints.get(i);
-            
-            // Draw node ID (above the node)
-            String nodeId = String.valueOf(currentNode.getId());
+    
+        for (Node node : nodes) {
+            int x = (int) (node.getX() * zoomFactor);
+            int y = (int) ((getHeight() - node.getY()) * zoomFactor);
+    
+            String nodeId = String.valueOf(node.getId());
             int nodeIdWidth = metrics.stringWidth(nodeId);
             
-            double x = currentPoint.x - (nodeIdWidth / 2.0);
-            double y = currentPoint.y - textHeight - textPadding * 3;
-            
             g2.setColor(Color.red);
-            g2.setFont(largerFont.deriveFont(Font.BOLD));
-            g2.drawString(nodeId, (int) x, (int) y);
-            
-            // Draw packet count (right next to node ID)
-            String packetCount = String.format("(%d)", currentNode.getPackets());
-            
-            double xData = x + nodeIdWidth + (textPadding * 5); // Add extra spacing
-            double yData = y; // Align with node ID
-        
+            g2.drawString(nodeId, x - (nodeIdWidth / 2), y - 10);
+    
+            String packetCount = String.format("(%d)", node.getPackets());
             g2.setColor(Color.darkGray);
-            g2.drawString(packetCount, (int) xData, (int) yData);
-            
-            // Debugging output to check positions
-            System.out.printf("Node %d -> Pos: (%.1f, %.1f), Packet Pos: (%.1f, %.1f)%n",
-                              currentNode.getId(), x, y, xData, yData);
+            g2.drawString(packetCount, x + (nodeIdWidth / 2) + 16, y - 10);
         }
-        g2.setStroke(new BasicStroke(2f));
+    
+        // Draw the robot's route
+        if (route != null && route.size() > 1) {
+            g2.setColor(Color.blue);
+            g2.setStroke(new BasicStroke(2));
+    
+            for (int i = 0; i < route.size() - 1; i++) {
+                Node current = route.get(i);
+                Node next = route.get(i + 1);
+                g2.drawLine((int) (current.getX() * zoomFactor), (int) ((getHeight() - current.getY()) * zoomFactor), 
+                            (int) (next.getX() * zoomFactor), (int) ((getHeight() - next.getY()) * zoomFactor));
+            }
+        }
     }
+    
+    
+    
 
     public void run() {
         JFrame frame = new JFrame("Sensor Network Graph");

@@ -20,6 +20,7 @@ public class SensorNetworkRunner {
         List<Node> nodeList = null;
         List<Node> immutableNodeList = null; 
         List<Node> modify = null; 
+        int transmissionRange = 0; 
 
         if(inputtingNetwork == 0){
             // Generating network logic 
@@ -29,7 +30,7 @@ public class SensorNetworkRunner {
         } else if (inputtingNetwork == 1) {
             // Network based on file logic 
             System.out.println("Enter the transmission range:");
-            int transmissionRange = scan.nextInt();
+            transmissionRange = scan.nextInt();
             System.out.println("Enter the filename:");
             String filename = scan.next();
             
@@ -45,7 +46,6 @@ public class SensorNetworkRunner {
                 nodeList = inputNetwork.getNodeList();
                 modify = new ArrayList<>(nodeList);
                 modify.add(new Node(0, 0, 0, 0));
-
                 immutableNodeList = Collections.unmodifiableList(new ArrayList<>(modify));
                 for(Node node : nodeList){
                     System.out.println(node);
@@ -110,13 +110,14 @@ public class SensorNetworkRunner {
         System.out.println("Algorithm took " + end + " milliseconds");
 
 
+        List<Node> route = robot.getRoute();
 
         if(inputtingNetwork == 0){
-            Visualization visual = new Visualization(autoSetup.getNodeList(), autoSetup.getWidth(), autoSetup.getLength());
+            Visualization visual = new Visualization(autoSetup.getNodeList(), autoSetup.getWidth(), autoSetup.getLength(), route, transmissionRange);
             visual.run(); 
         }
         if(inputtingNetwork == 1){
-            Visualization visual = new Visualization( immutableNodeList, 1700, 1700);
+            Visualization visual = new Visualization( immutableNodeList, 1700, 1700, route, transmissionRange);
             visual.run();
         }
      }
