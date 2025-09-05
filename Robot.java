@@ -108,5 +108,20 @@ public class Robot {
     public String toString(){ 
         return String.format("Robot Position: (%d, %d) \nLeftover battery: %f (%f meters)  \nTotal Packets: %d" +
          "\nPackets from Visiting: %d \nPackets from Covering: %d", this.x, this.y, this.battery, this.battery * 36, this.totalPackets, this.visitedPackets, this.coveredPackets);
-    }
+   
+   
+        }
+
+
+public double getBattery() {
+    return battery;
+}
+
+public double getTotalDistance() {
+    return totalDistance;
+}
+
+public int getTotalPackets() {
+    return totalPackets;
+}
 }
