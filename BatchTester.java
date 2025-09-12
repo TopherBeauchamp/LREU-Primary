@@ -17,7 +17,7 @@ public class BatchTester {
         String[] networkFiles = {"N1.txt", "N2.txt", "N3.txt", "N4.txt"};
         
         // Define transmission range
-        int transmissionRange = 500;
+        int transmissionRange = 100;
         
         // Create exporter
         DataExporter exporter = new DataExporter();

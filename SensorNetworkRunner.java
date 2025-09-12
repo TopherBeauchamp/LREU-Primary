@@ -72,7 +72,9 @@ public class SensorNetworkRunner {
         }
 
         // Run the algorithm and gather results
-        SimulationResult result = runAlgorithm(robot, graph, inputtingNetwork, autoSetup, nodeList, immutableNodeList, transmissionRange);
+        DataExporter.SimulationResult result =
+            runAlgorithm(robot, graph, inputtingNetwork, autoSetup, nodeList, immutableNodeList, transmissionRange, battery);
+
         
         // Create exporter and export results
         DataExporter exporter = new DataExporter();
@@ -126,8 +128,8 @@ public class SensorNetworkRunner {
                     robot.setFeasibleNodes();
                     
                     // Run algorithm without visualization
-                    SimulationResult result = runAlgorithm(robot, graph, 1, null, nodeList, immutableNodeList, transmissionRange);
-                    result.batteryLevel = battery; // Set the battery level for grouping
+                    DataExporter.SimulationResult result =
+                        runAlgorithm(robot, graph, 1, null, nodeList, immutableNodeList, transmissionRange, battery);
                     
                     exporter.addResult(result);
                     
@@ -151,75 +153,37 @@ public class SensorNetworkRunner {
             System.out.println("Error exporting results: " + e.getMessage());
         }
     }
-    
-    private static DataExplorer.SimulationResult runAlgorithm(Robot robot, ListGraph graph, 
-                                             int inputtingNetwork, AutomatedSetup autoSetup, 
-                                             List<Node> nodeList, List<Node> immutableNodeList, 
-                                             int transmissionRange) {
-        List<Node> feasibleNodes = robot.getFeasibleNodes();
-        int iter = 1;
-
-        // Start timing
-        long initialTime = System.currentTimeMillis();
         
-        // Run the algorithm silently (no printing)
-        while (feasibleNodes.size() != 0) {
+    private static DataExporter.SimulationResult runAlgorithm(
+        Robot robot,
+        ListGraph graph,
+        int inputtingNetwork,
+        AutomatedSetup autoSetup,
+        List<Node> nodeList,
+        List<Node> immutableNodeList,
+        int transmissionRange,
+        double battery // <-- ADD THIS
+    ) {
+        List<Node> feasibleNodes = robot.getFeasibleNodes();
+        long initialTime = System.currentTimeMillis();
+
+        while (!feasibleNodes.isEmpty()) {
             robot.findBestPCR();
             robot.moveRobotToNode(robot.getGreatestNode());
             graph.updatePrizes(robot.getGreatestNode().getNetwork());
             robot.setFeasibleNodes();
             feasibleNodes = robot.getFeasibleNodes();
-            iter++;
         }
-        
-        // Return to home position
+
         robot.returnHome();
-        
-        // End timing
         long computationalTime = System.currentTimeMillis() - initialTime;
-        
-        // Optional visualization (only if requested by user)
-        if (Boolean.getBoolean("showVisualization")) {
-            if (inputtingNetwork == 0) {
-                Visualization visual = new Visualization(autoSetup.getNodeList(), autoSetup.getWidth(), autoSetup.getLength(), robot.getRoute(), transmissionRange);
-                visual.run();
-            } else if (inputtingNetwork == 1) {
-                Visualization visual = new Visualization(immutableNodeList, 1700, 1700, robot.getRoute(), transmissionRange);
-                visual.run();
-            }
-        }
-        
-        // Create and return result
+
         return new DataExporter.SimulationResult(
-            "Network", 
-            robot.getTotalPackets(), 
-            robot.getTotalDistance(), 
+            "Network",
+            robot.getTotalPackets(),
+            robot.getTotalDistance(),
             computationalTime,
-            robot.getBattery()
+            battery // ✅ Pass it here instead of setting later
         );
-    }
-    
-    // Inner class for storing simulation results
-    private static class SimulationResult {
-        private String networkName;
-        private int dataPackets;
-        private double distanceTraveled;
-        private long computationalTime;
-        private double batteryLevel;
-        
-        public SimulationResult(String networkName, int dataPackets, double distanceTraveled, 
-                                long computationalTime, double batteryLevel) {
-            this.networkName = networkName;
-            this.dataPackets = dataPackets;
-            this.distanceTraveled = distanceTraveled;
-            this.computationalTime = computationalTime;
-            this.batteryLevel = batteryLevel;
-        }
-        
-        public String getNetworkName() { return networkName; }
-        public int getDataPackets() { return dataPackets; }
-        public double getDistanceTraveled() { return distanceTraveled; }
-        public long getComputationalTime() { return computationalTime; }
-        public double getBatteryLevel() { return batteryLevel; }
     }
 }

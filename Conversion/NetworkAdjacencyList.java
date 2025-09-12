@@ -3,7 +3,7 @@ import java.util.*;
 
 public class NetworkAdjacencyList {
     public static void main(String[] args) {
-        String filename = "N3.txt";
+        String filename = "Conversion\\N3.txt";
         System.out.println(filename);
         List<Node> nodes = readNodesFromFile(filename);
         double[][] costMatrix = computeAdjacencyMatrix(nodes);
